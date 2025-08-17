@@ -52,7 +52,7 @@ try:
     db.connect(reuse_if_open=True)
     # Create in dependency order
     db.create_tables([Participant, Result, Answer], safe=True)
-
+    print("yes done")
 except Exception:
     # Avoid crashing on import if migrations/permissions are pending; app can handle later
     pass
