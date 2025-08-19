@@ -63,6 +63,21 @@ body::after{
 .quiz-footer{display:flex;justify-content:space-between;align-items:center}
 .timer{font-weight:600;color:#222}
 
+/* leaderboard layout: extend background and prevent overflow */
+#leaderboard .card{width:min(1100px,96vw); padding:0; overflow:hidden; border-radius:16px; background:linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.94)); box-shadow:0 30px 80px rgba(3,2,20,0.35)}
+#leaderboard .card .title{margin:0; padding:20px; background:linear-gradient(180deg,#f2ecff,#eef7ff); border-bottom:1px solid rgba(0,0,0,0.06); font-size:32px}
+#leaderboard #leaderboard-table{padding:0}
+#leaderboard .card .status{padding:12px 16px}
+#leaderboard .card .btn.small{margin:12px auto 20px; display:inline-block}
+
+/* leaderboard table */
+.lb-table{width:100%; border-collapse:separate; border-spacing:0; margin:0; background:linear-gradient(180deg,#fff,#f7fbff)}
+.lb-table thead th{position:sticky; top:0; background:linear-gradient(90deg, rgba(123,44,255,0.16), rgba(58,195,255,0.16)); color:#3b2b6b; font-weight:700; letter-spacing:.3px; font-size:14px}
+.lb-table th,.lb-table td{padding:12px 14px; border-bottom:1px solid rgba(0,0,0,0.06); text-align:center}
+.lb-table tbody tr:nth-child(odd){background:rgba(0,0,0,0.02)}
+.lb-table tbody tr:hover{background:rgba(123,44,255,0.06)}
+.lb-table tbody tr.highlight{background:#e0e7ff}
+
 /* animations */
 .slide-in{animation:slideIn .45s ease both}
 @keyframes slideIn{from{transform:translateX(30px);opacity:0}to{transform:translateX(0);opacity:1}}

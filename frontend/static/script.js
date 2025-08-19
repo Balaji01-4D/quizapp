@@ -264,19 +264,20 @@ async function showLeaderboard(){
     const res = await fetch("/api/leaderboard");
     const data = await res.json();
     if(Array.isArray(data)){
-      let html = `<table class='lb-table'><thead><tr><th>Rank</th><th>Name</th><th>Reg No</th><th>Correct</th><th>Points</th><th>Avg Time (s)</th></tr></thead><tbody>`;
+      let html = `<div class='lb-card'><table class='lb-table'><thead><tr><th>Rank</th><th>Name</th><th>Reg No</th><th>Correct</th><th>Points</th><th>Avg Time (s)</th></tr></thead><tbody>`;
       let found = false;
       data.forEach((row, idx) => {
         const avgTime = row.avg_time ?? "";
-        html += `<tr${row.regno===userRegno ? " style='background:#e0e7ff'" : ""}><td>${idx+1}</td><td>${row.name}</td><td>${row.regno}</td><td>${row.correct}</td><td>${row.points}</td><td>${avgTime}</td></tr>`;
+        const highlight = row.regno===userRegno ? " class='highlight'" : "";
+        html += `<tr${highlight}><td>${idx+1}</td><td>${row.name}</td><td>${row.regno}</td><td>${row.correct}</td><td>${row.points}</td><td>${avgTime}</td></tr>`;
         if(row.regno===userRegno){
           yourRank = `Your Rank: ${idx+1} | Points: ${row.points} | Avg Time: ${avgTime}s`;
           found = true;
         }
       });
-      html += `</tbody></table>`;
+      html += `</tbody></table></div>`;
       tableDiv.innerHTML = html;
-      document.getElementById("your-rank").textContent = yourRank || "You are not in the top 20.";
+      document.getElementById("your-rank").textContent = yourRank || "You are not ranked yet.";
     } else {
       tableDiv.innerHTML = "No leaderboard data.";
     }

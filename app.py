@@ -146,13 +146,12 @@ def submit_quiz():
 
 @app.route("/leaderboard")
 def leaderboard():
-    # ORM query for top 20 joined with Participant
+    # ORM query for all results joined with Participant
     rows = (
         Result
         .select(Result, Participant)
         .join(Participant)
         .order_by(Result.points.desc(), Result.avg_time.asc())
-        .limit(20)
     )
     leaderboard_data = [
         {
@@ -175,7 +174,6 @@ def leaderboard_api():
             .select(Result, Participant)
             .join(Participant)
             .order_by(Result.points.desc(), Result.avg_time.asc())
-            .limit(20)
         )
         data = []
         for r in rows:
