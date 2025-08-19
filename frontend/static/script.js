@@ -34,7 +34,7 @@ try{
 let QUESTIONS = [];
 let currentIndex = 0;
 let timerInt = null;
-const PER_TIME = 20;
+const PER_TIME = 60; // 1 minute per question
 let timeLeft = PER_TIME;
 let answersGiven = [];
 let questionStartTime = null;
@@ -83,7 +83,17 @@ async function fetchQuestions(){
 restoreUserFromStorage();
 
 // video end -> show welcome after 3s
+
+// Reduce intro video to 2 seconds: skip to end after 2s if not already ended
+let introTimeout = setTimeout(() => {
+  if (!introVideo.ended) {
+    introVideo.currentTime = introVideo.duration || 9999; // force end
+    introVideo.dispatchEvent(new Event("ended"));
+  }
+}, 2000);
+
 introVideo.addEventListener("ended", async () => {
+  clearTimeout(introTimeout);
   // hide intro visuals
   introScreen.style.display = "none";
   // allow app visibility

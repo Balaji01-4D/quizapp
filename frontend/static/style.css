@@ -1,3 +1,10 @@
+/* Prevent text selection on quiz UI */
+#quiz, #quiz * {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
 :root{
   --bg1:#0b0120; --accent1:#7b2cff; --accent2:#3ac3ff; --card:#ffffffee;
 }

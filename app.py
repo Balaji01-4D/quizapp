@@ -1,3 +1,4 @@
+# How to Play manual page
 import os
 import csv
 from io import StringIO
@@ -41,6 +42,10 @@ def require_admin(fn):
 @app.route("/")
 def index():
     return render_template("index.html")
+
+@app.route("/how-to-play.html")
+def how_to_play():
+    return render_template("how-to-play.html")
 
 @app.route("/register", methods=["POST"]) 
 def register():
@@ -88,12 +93,21 @@ def register():
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
 
+import random
+
 @app.route("/questions")
 def get_questions():
     if QUESTIONS_FILE.exists():
         with open(QUESTIONS_FILE, "r", encoding="utf-8") as f:
             qs = json.load(f)
-        safe = [{"id": i, "question": q["question"], "options": q["options"]} for i, q in enumerate(qs)]
+        # Select 15 unique random questions (or all if less than 15)
+        num_questions = min(15, len(qs))
+        selected = random.sample(qs, num_questions) if num_questions > 0 else []
+        # Re-assign ids based on the selected questions' original indices
+        safe = []
+        for q in selected:
+            idx = qs.index(q)
+            safe.append({"id": idx, "question": q["question"], "options": q["options"]})
         return jsonify(safe)
     return jsonify([])
 
