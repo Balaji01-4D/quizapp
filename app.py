@@ -154,15 +154,27 @@ def submit_quiz():
     time_counts = 0
 
     for i, ans in enumerate(answers):
+        # Get qId, fallback to i if not present or invalid
         qid = ans.get("qId", i)
+        try:
+            qid = int(qid)
+        except (ValueError, TypeError):
+            continue  # skip invalid qid
+        if not (0 <= qid < len(questions)):
+            continue  # skip out-of-range qid
         selected = ans.get("selected", None)
+        try:
+            selected = int(selected)
+        except (ValueError, TypeError):
+            continue  # skip invalid selected
         time_sec = ans.get("time_sec", None)
-        if time_sec is not None:
+        if isinstance(time_sec, (int, float)):
             total_time += time_sec
             time_counts += 1
-        if selected is not None and isinstance(qid, int) and 0 <= qid < len(questions):
-            if selected == questions[qid].get("answer"):
-                correct += 1
+        # Compare answer index
+        correct_answer = questions[qid].get("answer")
+        if isinstance(correct_answer, int) and selected == correct_answer:
+            correct += 1
 
     points = correct * 2
     avg_time = (total_time / time_counts) if time_counts else 0

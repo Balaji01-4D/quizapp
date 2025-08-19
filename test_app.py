@@ -435,6 +435,46 @@ class QuizLogicTestCase(unittest.TestCase):
             self.assertEqual(result.points, 4)  # 2 points each
             self.assertEqual(result.avg_time, 12.5)  # (10+15)/2
 
+    def test_scoring_partial_and_wrong(self):
+        """Test that partial and all-wrong answers are scored correctly"""
+        test_questions = [
+            {"question": "Q1", "options": ["A", "B"], "answer": 0},
+            {"question": "Q2", "options": ["A", "B"], "answer": 1},
+        ]
+        with patch('builtins.open', unittest.mock.mock_open(read_data=json.dumps(test_questions))):
+            app_instance = app.test_client()
+            # All wrong
+            answers = [
+                {"qId": 0, "selected": 1, "time_sec": 5},  # Wrong
+                {"qId": 1, "selected": 0, "time_sec": 7},  # Wrong
+            ]
+            response = app_instance.post('/submit-quiz', json={
+                "name": "Logic Test",
+                "regno": "LOGIC001",
+                "answers": answers
+            })
+            self.assertEqual(response.status_code, 200)
+            result = Result.get(Result.participant == self.participant)
+            self.assertEqual(result.correct, 0)
+            self.assertEqual(result.points, 0)
+            self.assertEqual(result.avg_time, 6.0)  # (5+7)/2
+
+            # One correct, one wrong
+            answers = [
+                {"qId": 0, "selected": 0, "time_sec": 8},  # Correct
+                {"qId": 1, "selected": 0, "time_sec": 12},  # Wrong
+            ]
+            response = app_instance.post('/submit-quiz', json={
+                "name": "Logic Test",
+                "regno": "LOGIC001",
+                "answers": answers
+            })
+            self.assertEqual(response.status_code, 200)
+            result = Result.get(Result.participant == self.participant)
+            self.assertEqual(result.correct, 1)
+            self.assertEqual(result.points, 2)
+            self.assertEqual(result.avg_time, 10.0)  # (8+12)/2
+
 
 if __name__ == '__main__':
     # Run with verbose output
