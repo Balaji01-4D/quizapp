@@ -1,5 +1,8 @@
 import os
-from flask import Flask, render_template, request, jsonify
+import csv
+from io import StringIO
+from functools import wraps
+from flask import Flask, render_template, request, jsonify, Response
 from flask_cors import CORS
 import json
 from pathlib import Path
@@ -15,6 +18,24 @@ app = Flask(__name__, static_folder="frontend/static", template_folder="frontend
 CORS(app)
 
 QUESTIONS_FILE = Path(__file__).parent / "questions.json"
+
+# === Admin Basic Auth ===
+ADMIN_USERNAME = os.getenv("ADMIN_USERNAME")
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
+
+def _unauthorized():
+    return Response("Authentication required", 401, {"WWW-Authenticate": 'Basic realm="Admin"'})
+
+def require_admin(fn):
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        if not (ADMIN_USERNAME and ADMIN_PASSWORD):
+            return Response("Admin credentials not configured", status=500)
+        auth = request.authorization
+        if not auth or not (auth.username == ADMIN_USERNAME and auth.password == ADMIN_PASSWORD):
+            return _unauthorized()
+        return fn(*args, **kwargs)
+    return wrapper
 
 # === Routes ===
 @app.route("/")
@@ -164,6 +185,134 @@ def leaderboard():
         for r in rows
     ]
     return render_template("leaderboard.html", board=leaderboard_data)
+
+# === Admin Dashboard ===
+@app.route("/admin")
+@require_admin
+def admin_dashboard():
+    # Top 10 for quick view
+    rows = (
+        Result
+        .select(Result, Participant)
+        .join(Participant)
+        .order_by(Result.points.desc(), Result.avg_time.asc())
+        .limit(10)
+    )
+    top = [
+        {
+            "rank": i+1,
+            "name": r.participant.name,
+            "regno": r.participant.regno,
+            "correct": r.correct,
+            "points": r.points,
+            "avg_time": round(float(r.avg_time), 2) if r.avg_time is not None else None,
+        }
+        for i, r in enumerate(rows)
+    ]
+    return render_template("admin.html", top=top)
+
+@app.route("/admin/api/top")
+@require_admin
+def admin_api_top():
+    rows = (
+        Result
+        .select(Result, Participant)
+        .join(Participant)
+        .order_by(Result.points.desc(), Result.avg_time.asc())
+        .limit(10)
+    )
+    data = []
+    for i, r in enumerate(rows):
+        avg = None
+        if r.avg_time is not None:
+            try:
+                avg = round(float(r.avg_time), 2)
+            except Exception:
+                avg = None
+        data.append({
+            "rank": i+1,
+            "name": r.participant.name,
+            "regno": r.participant.regno,
+            "correct": r.correct,
+            "points": r.points,
+            "avg_time": avg,
+        })
+    return jsonify(data)
+
+@app.route("/admin/api/delete-participant", methods=["POST"])
+@require_admin
+def admin_api_delete_participant():
+    payload = request.get_json(silent=True) or {}
+    regno = (payload.get("regno") or "").strip()
+    if not regno:
+        return jsonify({"success": False, "message": "regno required"}), 400
+    # Try to find and delete
+    p = Participant.get_or_none(Participant.regno == regno)
+    if not p:
+        return jsonify({"success": False, "message": "Participant not found"}), 404
+    try:
+        p.delete_instance(recursive=True)  # cascade delete result and answers
+        return jsonify({"success": True, "message": f"Deleted {regno}"})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+@app.route("/admin/api/add-question", methods=["POST"])
+@require_admin
+def admin_api_add_question():
+    data = request.get_json(silent=True) or {}
+    question = (data.get("question") or "").strip()
+    options = data.get("options") or []
+    answer = data.get("answer")
+    # Basic validation
+    if not question:
+        return jsonify({"success": False, "message": "question required"}), 400
+    if not isinstance(options, list) or len(options) < 2:
+        return jsonify({"success": False, "message": "options must be a list with at least 2 items"}), 400
+    if not isinstance(answer, int) or not (0 <= answer < len(options)):
+        return jsonify({"success": False, "message": "answer must be a valid index"}), 400
+    try:
+        # Read existing
+        questions = []
+        if QUESTIONS_FILE.exists():
+            with open(QUESTIONS_FILE, "r", encoding="utf-8") as f:
+                try:
+                    questions = json.load(f) or []
+                except Exception:
+                    questions = []
+        questions.append({"question": question, "options": options, "answer": answer})
+        with open(QUESTIONS_FILE, "w", encoding="utf-8") as f:
+            json.dump(questions, f, ensure_ascii=False, indent=2)
+        return jsonify({"success": True, "message": "Question added", "count": len(questions)})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+@app.route("/admin/api/export-leaderboard")
+@require_admin
+def admin_api_export_leaderboard():
+    # Export all leaderboard rows as CSV
+    rows = (
+        Result
+        .select(Result, Participant)
+        .join(Participant)
+        .order_by(Result.points.desc(), Result.avg_time.asc())
+    )
+    si = StringIO()
+    writer = csv.writer(si)
+    writer.writerow(["rank", "name", "regno", "correct", "points", "avg_time"])
+    for i, r in enumerate(rows):
+        avg = ""
+        if r.avg_time is not None:
+            try:
+                avg = round(float(r.avg_time), 2)
+            except Exception:
+                avg = ""
+        writer.writerow([i+1, r.participant.name, r.participant.regno, r.correct, r.points, avg])
+    output = si.getvalue()
+    return Response(
+        output,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment; filename=leaderboard.csv"}
+    )
 
 # JSON API for leaderboard, used by the SPA
 @app.route("/api/leaderboard")

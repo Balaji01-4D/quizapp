@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin • Quiz</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root{ --bg:#0b0120; --panel:#11152a; --soft:#1a1f3a; --txt:#eef1ff; --muted:#aab0d6; --acc1:#7b2cff; --acc2:#3ac3ff }
+    *{box-sizing:border-box}
+    body{margin:0; font-family:'Poppins',sans-serif; background:radial-gradient(1200px 600px at 50% -200px, rgba(123,44,255,.25), rgba(58,195,255,.2) 30%, transparent 60%), linear-gradient(180deg,#0b0120,#1d0e40); color:var(--txt)}
+    .wrap{max-width:1100px; margin:40px auto; padding:0 16px}
+    .header{display:flex; align-items:center; justify-content:space-between; gap:12px}
+    h1{font-size:28px; margin:0}
+    .grid{display:grid; grid-template-columns: 1.2fr .8fr; gap:16px; margin-top:18px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03)); border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:16px; box-shadow:0 30px 60px rgba(3,2,20,0.24)}
+    .card h2{margin:0 0 10px 0; font-size:18px}
+
+    table{width:100%; border-collapse:separate; border-spacing:0; background:transparent}
+    thead th{position:sticky; top:0; background:linear-gradient(90deg, rgba(123,44,255,0.24), rgba(58,195,255,0.18)); color:#e6e4ff; font-weight:700}
+    th,td{padding:10px 12px; border-bottom:1px solid rgba(255,255,255,0.06); text-align:left}
+    tbody tr:nth-child(odd){background:rgba(255,255,255,0.02)}
+
+    .row{display:flex; gap:10px; flex-wrap:wrap}
+    input, textarea{width:100%; padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.14); background:#0f1430; color:#fff}
+    textarea{min-height:60px}
+    .btn{padding:10px 14px; border-radius:10px; border:none; cursor:pointer; color:#001; font-weight:700; background:linear-gradient(90deg, var(--acc1), var(--acc2)); box-shadow:0 10px 24px rgba(58,195,255,0.16)}
+    .btn.warn{background:linear-gradient(90deg, #ff6a6a, #ff9b4d); color:#201}
+    .muted{color:var(--muted)}
+    .two{display:grid; grid-template-columns: 1fr 1fr; gap:10px}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; font-size:12px; color:#c3d2ff}
+    .small{font-size:12px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header"><h1>Admin Dashboard</h1><div class="small muted">Protected by Basic Auth</div></div>
+    <div class="grid">
+      <section class="card">
+        <h2>Top 10 Participants</h2>
+        <div id="top10">
+          <table>
+            <thead><tr><th>#</th><th>Name</th><th>Reg No</th><th>Correct</th><th>Points</th><th>Avg Time</th><th></th></tr></thead>
+            <tbody>
+              {% for r in top %}
+              <tr>
+                <td>{{ r.rank }}</td>
+                <td>{{ r.name }}</td>
+                <td class="mono">{{ r.regno }}</td>
+                <td>{{ r.correct }}</td>
+                <td>{{ r.points }}</td>
+                <td>{{ r.avg_time }}</td>
+                <td><button class="btn warn small" onclick="del('{{ r.regno }}')">Delete</button></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          <div class="small muted">Download full leaderboard as CSV from Export section.</div>
+        </div>
+      </section>
+      <aside class="card">
+        <h2>Add Question</h2>
+        <div class="row">
+          <input id="q" placeholder="Question text" />
+          <textarea id="opts" placeholder='Options (JSON array), e.g. ["A","B","C","D"]'></textarea>
+          <input id="ans" placeholder="Answer index (0-based)" />
+          <button class="btn" onclick="addQuestion()">Add</button>
+          <div id="add-status" class="small muted"></div>
+        </div>
+        <hr style="opacity:.12">
+        <h2>Export</h2>
+        <div class="row">
+          <a class="btn" href="/admin/api/export-leaderboard">Export Leaderboard CSV</a>
+        </div>
+      </aside>
+    </div>
+  </div>
+  <script>
+    function del(regno){
+      if(!confirm('Delete participant '+regno+' ?')) return;
+      fetch('/admin/api/delete-participant', {
+        method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({regno})
+      }).then(r=>r.json()).then(j=>{
+        alert(j.message || (j.success ? 'Deleted' : 'Error'));
+        if(j.success) location.reload();
+      }).catch(()=>alert('Network error'));
+    }
+    function addQuestion(){
+      const q = document.getElementById('q').value.trim();
+      const optsRaw = document.getElementById('opts').value.trim();
+      const ans = parseInt(document.getElementById('ans').value.trim(), 10);
+      let options = [];
+      try{ options = JSON.parse(optsRaw); }catch(e){ document.getElementById('add-status').textContent = 'Options must be valid JSON array'; return; }
+      fetch('/admin/api/add-question', {
+        method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({question:q, options, answer:ans})
+      }).then(r=>r.json()).then(j=>{
+        document.getElementById('add-status').textContent = j.message || (j.success ? 'Added' : 'Error');
+        if(j.success){ document.getElementById('q').value=''; document.getElementById('opts').value=''; document.getElementById('ans').value=''; }
+      }).catch(()=>document.getElementById('add-status').textContent='Network error');
+    }
+  </script>
+</body>
+</html>
