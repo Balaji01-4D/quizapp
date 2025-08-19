@@ -18,6 +18,20 @@ load_dotenv()
 app = Flask(__name__, static_folder="frontend/static", template_folder="frontend/templates")
 CORS(app)
 
+# === Database Connection Management ===
+@app.before_request
+def before_request():
+    """Connect to the database before each request."""
+    if db.is_closed():
+        db.connect()
+
+@app.after_request
+def after_request(response):
+    """Close the database connection after each request."""
+    if not db.is_closed():
+        db.close()
+    return response
+
 QUESTIONS_FILE = Path(__file__).parent / "questions.json"
 
 # === Admin Basic Auth ===
