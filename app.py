@@ -114,12 +114,14 @@ def get_questions():
     if QUESTIONS_FILE.exists():
         with open(QUESTIONS_FILE, "r", encoding="utf-8") as f:
             qs = json.load(f)
-        # Select 15 unique random questions (or all if less than 15)
-        num_questions = min(5, len(qs))
-        selected = random.sample(qs, num_questions) if num_questions > 0 else []
-        # Re-assign ids based on the selected questions' original indices
+        # Split into set a (first 15) and set b (last 15)
+        set_a = qs[:15]
+        set_b = qs[15:]
+        chosen_set = random.choice([set_a, set_b])
+        # Re-assign ids based on the selected questions' original indices in qs
         safe = []
-        for q in selected:
+        for i, q in enumerate(chosen_set):
+            # The id should be the index in the full qs list
             idx = qs.index(q)
             safe.append({"id": idx, "question": q["question"], "options": q["options"]})
         return jsonify(safe)
@@ -138,7 +140,7 @@ def submit_quiz():
     if not regno:
         return jsonify({"success": False, "message": "Missing regno"}), 400
 
-    # Participant must be registered
+    
     try:
         p = Participant.get(Participant.regno == regno)
     except Participant.DoesNotExist:
