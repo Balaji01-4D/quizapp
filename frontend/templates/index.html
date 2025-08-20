@@ -32,71 +32,96 @@
 
   <!-- Main app (hidden until intro finished) -->
   <main id="app" aria-hidden="true">
-    <!-- Welcome -->
-    <section id="welcome" class="panel hidden">
-      <div class="card welcome-card">
-        <h1 class="title glow-large">Welcome to Algorithm Quiz</h1>
-        <p class="subtitle">Sharpen your algorithm skills — register to continue</p>
+    <div class="window">
+      <div class="titlebar">
+        <div class="traffic"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span></div>
+        <div class="title">Algorithm Quiz</div>
       </div>
-    </section>
+      <div class="window-body">
+        <aside class="sidebar">
+          <nav class="nav">
+            <div class="item active"><span class="ico">🏠</span><span>Home</span></div>
+            <div class="item"><span class="ico">📝</span><span>Registration</span></div>
+            <div class="item"><span class="ico">❓</span><span>Quiz</span></div>
+            <div class="item"><span class="ico">🏆</span><span>Leaderboard</span></div>
+          </nav>
+        </aside>
+        <section class="content">
+          <!-- Welcome -->
+          <section id="welcome" class="panel hidden">
+            <div class="card welcome-card">
+              <h1 class="title glow-large">Welcome to Algorithm Quiz</h1>
+              <p class="subtitle">Sharpen your algorithm skills — register to continue</p>
+            </div>
+          </section>
 
-    <!-- Registration -->
-    <section id="registration" class="panel hidden">
-      <div class="card reg-card">
-        <h2 class="title-small">Register for Quiz</h2>
-        <div class="form-row">
-          <input id="name" placeholder="Full name" />
-          <input id="regno" placeholder="Registration no." />
-        </div>
-        <div class="form-row">
-          <input id="college" placeholder="College" />
-          <input id="department" placeholder="Department" />
-          <input id="year" placeholder="Year" />
-        </div>
-          <div style="text-align:center;margin-bottom:1em;">
-            <a href="/how-to-play.html" style="color:#4f8cff;text-decoration:underline;font-size:1.1em;">How to play?</a>
-          </div>
-        <div class="actions">
-          <button id="register-btn" class="btn">Register</button>
-          <button id="start-btn" class="btn hidden">Start Quiz</button>
-        </div>
-        <p id="reg-status" class="status"></p>
-      </div>
-    </section>
+          <!-- Registration -->
+          <section id="registration" class="panel hidden">
+            <div class="card reg-card">
+              <h2 class="title-small">Register for Quiz</h2>
+              <div class="form-row">
+                <input id="name" placeholder="Full name" />
+                <input id="regno" placeholder="Registration no." />
+              </div>
+              <div class="form-row">
+                <input id="college" placeholder="College" />
+                <input id="department" placeholder="Department" />
+                <input id="year" placeholder="Year" />
+              </div>
+              <div style="text-align:center;margin-bottom:1em;">
+                <a href="/how-to-play.html" style="color:#4f8cff;text-decoration:underline;font-size:1.1em;">How to play?</a>
+              </div>
+              <div class="actions">
+                <button id="register-btn" class="btn">Register</button>
+                <button id="start-btn" class="btn hidden">Start Quiz</button>
+              </div>
+              <p id="reg-status" class="status"></p>
+            </div>
+          </section>
 
-    <!-- Quiz -->
-    <section id="quiz" class="panel hidden">
-      <div class="card quiz-card">
-        <div id="question-box" class="question-box slide-in">
-          <h2 id="question-text"></h2>
-          <div id="options" class="options"></div>
-        </div>
-        <div class="quiz-footer">
-          <div id="timer" class="timer">Time: <span id="time">20</span>s</div>
-          <div><button id="next-btn" class="btn small">Next</button></div>
-        </div>
-      </div>
-    </section>
+          <!-- Quiz -->
+          <section id="quiz" class="panel hidden">
+            <div class="card quiz-card">
+              <div class="quiz-header">
+                <div class="q-title" id="q-title">Question</div>
+                <div class="progress">
+                  <div class="progress-meta">
+                    <span id="q-count">Q 1 of 1</span>
+                    <span id="timer" class="timer">Time: <span id="time">60</span>s</span>
+                  </div>
+                  <div class="progress-bar"><div id="progress-fill"></div></div>
+                </div>
+              </div>
+              <div id="question-box" class="question-box slide-in">
+                <h2 id="question-text"></h2>
+                <div id="options" class="options"></div>
+              </div>
+              <div class="quiz-footer"><div></div><div><button id="next-btn" class="btn small">Next</button></div></div>
+            </div>
+          </section>
 
-    <!-- Thank you -->
-    <section id="thank" class="panel hidden">
-      <div class="card">
-        <h2>Finished</h2>
-        <p id="final-msg"></p>
-      </div>
-    </section>
+          <!-- Thank you -->
+          <section id="thank" class="panel hidden">
+            <div class="card">
+              <h2>Finished</h2>
+              <p id="final-msg"></p>
+            </div>
+          </section>
 
-    <!-- Leaderboard -->
-    <section id="leaderboard" class="panel hidden">
-      <div class="card">
-        <h2 class="title">Leaderboard</h2>
-        <div id="leaderboard-table"></div>
-        <div id="your-rank-container">
-          <p id="your-rank" class="status"></p>
-        </div>
-        <button id="close-leaderboard" class="btn small">Close</button>
+          <!-- Leaderboard -->
+          <section id="leaderboard" class="panel hidden">
+            <div class="card">
+              <h2 class="title">Leaderboard</h2>
+              <div id="leaderboard-table"></div>
+              <div id="your-rank-container">
+                <p id="your-rank" class="status"></p>
+              </div>
+              <button id="close-leaderboard" class="btn small">Close</button>
+            </div>
+          </section>
+        </section>
       </div>
-    </section>
+    </div>
   </main>
 
   <script src="{{ url_for('static', filename='script.js') }}"></script>

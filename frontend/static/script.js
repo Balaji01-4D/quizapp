@@ -11,6 +11,21 @@ const registerBtn = document.getElementById("register-btn");
 const startBtn = document.getElementById("start-btn");
 const regStatus = document.getElementById("reg-status");
 
+// quiz header elements
+const qTitle = document.getElementById("q-title");
+const qCount = document.getElementById("q-count");
+const progressFill = document.getElementById("progress-fill");
+
+// sidebar nav
+const navItems = document.querySelectorAll('.nav .item');
+function setActiveNav(key){
+  const map = { home:0, registration:1, quiz:2, leaderboard:3 };
+  const idx = map[key];
+  navItems.forEach((el,i)=>{
+    if(i===idx) el.classList.add('active'); else el.classList.remove('active');
+  });
+}
+
 // user badge elements
 const userBadge = document.getElementById("user-badge");
 const ubName = document.getElementById("ub-name");
@@ -101,11 +116,13 @@ introVideo.addEventListener("ended", async () => {
 
   // show welcome
   welcome.classList.remove("hidden");
+  setActiveNav('home');
   // after 3s show registration
   setTimeout(() => {
     welcome.classList.add("hidden");
     registration.classList.remove("hidden");
     document.getElementById("name").focus();
+    setActiveNav('registration');
   }, 3000);
 
   // preload questions
@@ -164,6 +181,7 @@ startBtn.addEventListener("click", () => {
   showUserBadge(userName, userRegno);
   showQuestion();
   startTimer();
+  setActiveNav('quiz');
 });
 
 // show question
@@ -173,6 +191,11 @@ function showQuestion(){
     return;
   }
   const q = QUESTIONS[currentIndex];
+  // header info
+  qTitle.textContent = "Question";
+  qCount.textContent = `Q ${currentIndex+1} of ${QUESTIONS.length}`;
+  const pct = Math.round(((currentIndex) / Math.max(1, QUESTIONS.length)) * 100);
+  if(progressFill) progressFill.style.width = pct + "%";
   document.getElementById("question-text").innerText = `Q${currentIndex+1}. ${q.question}`;
   const opts = document.getElementById("options");
   opts.innerHTML = "";
@@ -215,6 +238,10 @@ function startTimer(){
   timerInt = setInterval(() => {
     timeLeft--;
     document.getElementById("time").innerText = timeLeft;
+  // animate progress for time within current question
+  const elapsedPct = Math.max(0, Math.min(100, ((PER_TIME - timeLeft) / PER_TIME) * (100/Math.max(1, QUESTIONS.length))));
+  const basePct = ((currentIndex) / Math.max(1, QUESTIONS.length)) * 100;
+  if(progressFill) progressFill.style.width = (basePct + elapsedPct) + "%";
     if(timeLeft <= 0){
       clearInterval(timerInt);
       nextQuestion();
@@ -267,6 +294,7 @@ async function showLeaderboard(){
   thank.classList.add("hidden");
   const lbSection = document.getElementById("leaderboard");
   lbSection.classList.remove("hidden");
+  setActiveNav('leaderboard');
   const tableDiv = document.getElementById("leaderboard-table");
   tableDiv.innerHTML = "Loading...";
   let yourRank = "";
@@ -274,12 +302,13 @@ async function showLeaderboard(){
     const res = await fetch("/api/leaderboard");
     const data = await res.json();
     if(Array.isArray(data)){
-      let html = `<div class='lb-card'><table class='lb-table'><thead><tr><th>Rank</th><th>Name</th><th>Reg No</th><th>Correct</th><th>Points</th><th>Avg Time (s)</th></tr></thead><tbody>`;
+      // Only show Rank, Reg No, Points, Avg Time
+      let html = `<div class='lb-card'><table class='lb-table'><thead><tr><th>Rank</th><th>Reg No</th><th>Points</th><th>Avg Time (s)</th></tr></thead><tbody>`;
       let found = false;
       data.forEach((row, idx) => {
         const avgTime = row.avg_time ?? "";
         const highlight = row.regno===userRegno ? " class='highlight'" : "";
-        html += `<tr${highlight}><td>${idx+1}</td><td>${row.name}</td><td>${row.regno}</td><td>${row.correct}</td><td>${row.points}</td><td>${avgTime}</td></tr>`;
+        html += `<tr${highlight}><td>${idx+1}</td><td>${row.regno}</td><td>${row.points}</td><td>${avgTime}</td></tr>`;
         if(row.regno===userRegno){
           yourRank = `Your Rank: ${idx+1} | Points: ${row.points} | Avg Time: ${avgTime}s`;
           found = true;

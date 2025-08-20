@@ -4,17 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Leaderboard</title>
+<link rel="stylesheet" href="/static/style.css">
 <style>
-    body {
-        background: linear-gradient(135deg, #2c0052, #5d0099);
-        font-family: 'Segoe UI', sans-serif;
-        color: white;
-        margin: 0;
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
+  body{margin:0; padding:20px; color:#fff; display:flex; flex-direction:column; align-items:center}
     /* fixed user badge */
     .user-badge{position:fixed; top:12px; left:12px; z-index:70; display:flex; align-items:center; gap:10px; backdrop-filter: blur(8px); background: linear-gradient(135deg, rgba(255,255,255,0.92), rgba(237,245,255,0.92)); border:1px solid rgba(123,44,255,0.18); border-radius: 14px; padding: 8px 12px 8px 8px; box-shadow: 0 14px 30px rgba(3,2,20,0.22); color:#1d1d1f; min-width: 220px}
     .user-badge .ub-avatar{width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; background: linear-gradient(135deg, #7b2cff, #3ac3ff); color:#fff; font-weight:700; font-size:14px; box-shadow: 0 6px 16px rgba(123,44,255,0.25)}
@@ -34,12 +26,7 @@
         letter-spacing: 2px;
         text-transform: uppercase;
     }
-    table {
-        width: 95%;
-        max-width: 900px;
-        border-collapse: collapse;
-        background-color: rgba(0, 0, 0, 0.3);
-    }
+  table { width: 95%; max-width: 900px; border-collapse: collapse; background-color: rgba(0, 0, 0, 0.3); }
     th, td {
         border: 2px solid #000; /* Thick black borders for well-defined grid */
         padding: 12px;
