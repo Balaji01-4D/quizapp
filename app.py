@@ -3,7 +3,7 @@ import os
 import csv
 from io import StringIO
 from functools import wraps
-from flask import Flask, render_template, request, jsonify, Response
+from flask import Flask, render_template, request, jsonify, Response, redirect, url_for
 from flask_cors import CORS
 import json
 from pathlib import Path
@@ -205,6 +205,29 @@ def submit_quiz():
 
     return jsonify({"success": True, "redirect": "/leaderboard"})
 
+# Leaderboard HTML page endpoint
+@app.route("/result")
+def leaderboard_page():
+    try:
+        rows = (
+            Result
+            .select(Result, Participant)
+            .join(Participant)
+            .order_by(Result.points.desc(), Result.avg_time.asc())
+        )
+        leaderboard_data = [
+            {
+                "name": r.participant.name,
+                "regno": r.participant.regno,
+                "correct": r.correct,
+                "points": r.points,
+                "avg_time": round(float(r.avg_time), 2) if r.avg_time is not None else ""
+            }
+            for r in rows
+        ]
+        return render_template("leaderboard_page.html", board=leaderboard_data)
+    except Exception as e:
+        return f"Error loading leaderboard: {e}", 500
 @app.route("/leaderboard")
 def leaderboard():
     # ORM query for all results joined with Participant
@@ -224,7 +247,8 @@ def leaderboard():
         }
         for r in rows
     ]
-    return render_template("leaderboard.html", board=leaderboard_data)
+    # return render_template("leaderboard.html", board=leaderboard_data)
+    return redirect(url_for('index'))  # Redirect to main page or update as needed
 
 # === Admin Dashboard ===
 @app.route("/admin")

@@ -316,7 +316,8 @@ function sendResultToServer(playerName, score, totalQuestions, timeTakenSec, ans
   .then(res => res.json())
   .then(data => {
     console.log('Result saved:', data);
-    window.location.href = '/leaderboard.html';
+    // window.location.href = '/leaderboard.html';
+    showLeaderboard(); // Show the primary leaderboard directly
   })
   .catch(err => console.error('Error saving result:', err));
 }

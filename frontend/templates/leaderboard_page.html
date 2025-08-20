@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="/static/favicon.png">
+    <title>Leaderboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>Leaderboard</h1>
+    <div class="lb-card">
+        <table class="lb-table">
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Name</th>
+                    <th>Reg No</th>
+                    <th>Correct</th>
+                    <th>Points</th>
+                    <th>Avg Time (s)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in board %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ row.name }}</td>
+                    <td>{{ row.regno }}</td>
+                    <td>{{ row.correct }}</td>
+                    <td>{{ row.points }}</td>
+                    <td>{{ row.avg_time }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
