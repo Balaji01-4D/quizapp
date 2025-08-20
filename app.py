@@ -115,7 +115,7 @@ def get_questions():
         with open(QUESTIONS_FILE, "r", encoding="utf-8") as f:
             qs = json.load(f)
         # Select 15 unique random questions (or all if less than 15)
-        num_questions = min(15, len(qs))
+        num_questions = min(5, len(qs))
         selected = random.sample(qs, num_questions) if num_questions > 0 else []
         # Re-assign ids based on the selected questions' original indices
         safe = []
