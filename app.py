@@ -115,9 +115,9 @@ def get_questions():
         with open(QUESTIONS_FILE, "r", encoding="utf-8") as f:
             qs = json.load(f)
         # Split into set a (first 15) and set b (last 15)
-        set_a = qs[:15]
-        set_b = qs[15:]
-        chosen_set = random.choice([set_a, set_b])
+        set_a = qs[:15][:2]
+        set_b = qs[15:][:2]
+        chosen_set = random.choice([set_a, set_b])  # Choose 2 from either set
         # Re-assign ids based on the selected questions' original indices in qs
         safe = []
         for i, q in enumerate(chosen_set):

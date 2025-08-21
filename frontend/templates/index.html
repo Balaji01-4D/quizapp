@@ -3,8 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
-  <title>Algorithm Quiz</title>
+  <title>Tech Tacts</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <!-- Fonts: Inter Variable for UI look + Poppins fallback -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
@@ -35,8 +37,15 @@
     <div class="window">
       <div class="titlebar">
         <div class="traffic"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span></div>
-        <div class="title">Algorithm Quiz</div>
+        <div class="title">Tech Tact</div>
       </div>
+      
+      <!-- User info card inside iOS container -->
+      <div id="user-info-card" class="user-info-card hidden">
+        <h3 class="user-name" id="user-card-name">—</h3>
+        <p class="user-reg" id="user-card-regno">—</p>
+      </div>
+      
       <div class="window-body">
         <aside class="sidebar">
           <nav class="nav">
@@ -50,7 +59,7 @@
           <!-- Welcome -->
           <section id="welcome" class="panel hidden">
             <div class="card welcome-card">
-              <h1 class="title glow-large">Welcome to Algorithm Quiz</h1>
+              <h1 class="title glow-large">Welcome to Tech Tact</h1>
               <p class="subtitle">Sharpen your algorithm skills — register to continue</p>
             </div>
           </section>
@@ -69,7 +78,7 @@
                 <input id="year" placeholder="Year" />
               </div>
               <div style="text-align:center;margin-bottom:1em;">
-                <a href="/how-to-play.html" style="color:#4f8cff;text-decoration:underline;font-size:1.1em;">How to play?</a>
+                <a href="#" id="how-to-play-link" style="color:#4f8cff;text-decoration:underline;font-size:1.1em;">How to play?</a>
               </div>
               <div class="actions">
                 <button id="register-btn" class="btn">Register</button>
@@ -117,6 +126,37 @@
                 <p id="your-rank" class="status"></p>
               </div>
               <button id="close-leaderboard" class="btn small">Close</button>
+            </div>
+          </section>
+
+          <!-- How to Play -->
+          <section id="how-to-play" class="panel hidden">
+            <div class="card">
+              <h2 class="title">How to Play? 🧠</h2>
+              <div class="how-to-play-content">
+                <p>Welcome to the Algorithm Quiz! Here's how you can play and maximize your score:</p>
+                <ul>
+                  <li><b>Register</b> with your name and registration number to begin.</li>
+                  <li>After registration, click <b>Start</b> to begin the quiz round.</li>
+                  <li>Each question will appear one at a time with multiple options.</li>
+                  <li><b>Read carefully</b> and select the correct answer before the timer runs out (<b>1 minute</b> per question).</li>
+                  <li>Once you select an option, you can change it before moving to the next question.</li>
+                  <li>Click <b>Next</b> to proceed. If you don't answer in time, it will be marked as unanswered.</li>
+                  <li>After the last question, your answers are submitted automatically.</li>
+                  <li>Points are awarded for correct answers. <b>Faster answers</b> may boost your ranking!</li>
+                  <li>Check your <b>Leaderboard</b> rank after submitting the quiz.</li>
+                </ul>
+                <div class="tip">
+                  <b>Tips to Win Effectively:</b>
+                  <ul>
+                    <li>Stay calm and read each question fully before answering.</li>
+                    <li>Don't rush, but keep an eye on the timer.</li>
+                    <li>Accuracy matters more than speed, but quick correct answers help your rank.</li>
+                    <li>Use a stable internet connection to avoid interruptions.</li>
+                  </ul>
+                </div>
+              </div>
+              <button id="close-how-to-play" class="btn small">Got it!</button>
             </div>
           </section>
         </section>

@@ -26,12 +26,17 @@ function setActiveNav(key){
   });
 }
 
-// user badge elements
+// user badge elements (top left - will be hidden)
 const userBadge = document.getElementById("user-badge");
 const ubName = document.getElementById("ub-name");
 const ubRegno = document.getElementById("ub-regno");
 const ubAvatar = document.getElementById("ub-avatar");
 const ubClear = document.getElementById("ub-clear");
+
+// user info card elements (inside iOS container - bottom left)
+const userInfoCard = document.getElementById("user-info-card");
+const userCardName = document.getElementById("user-card-name");
+const userCardRegno = document.getElementById("user-card-regno");
 
 // Clear stored user on hard refresh (F5/Ctrl+R)
 try{
@@ -57,12 +62,17 @@ let userName = "", userRegno = "";
 
 function showUserBadge(name, regno){
   if(name && regno){
-    ubName.textContent = name;
-    ubRegno.textContent = regno;
-    ubAvatar.textContent = (name?.[0] || 'U').toUpperCase();
-    userBadge.classList.remove("hidden");
-  } else {
+    // Hide the old top-left badge
     userBadge.classList.add("hidden");
+    
+    // Show the new bottom-left card inside iOS container
+    userCardName.textContent = name;
+    userCardRegno.textContent = regno;
+    userInfoCard.classList.remove("hidden");
+  } else {
+    // Hide both when no user
+    userBadge.classList.add("hidden");
+    userInfoCard.classList.add("hidden");
   }
 }
 
@@ -302,13 +312,13 @@ async function showLeaderboard(){
     const res = await fetch("/api/leaderboard");
     const data = await res.json();
     if(Array.isArray(data)){
-      // Only show Rank, Reg No, Points, Avg Time
-      let html = `<div class='lb-card'><table class='lb-table'><thead><tr><th>Rank</th><th>Reg No</th><th>Points</th><th>Avg Time (s)</th></tr></thead><tbody>`;
+      // Only show Rank, Name, Points, Avg Time
+      let html = `<div class='lb-card'><table class='lb-table'><thead><tr><th>Rank</th><th>Name</th><th>Points</th><th>Avg Time (s)</th></tr></thead><tbody>`;
       let found = false;
       data.forEach((row, idx) => {
         const avgTime = row.avg_time ?? "";
         const highlight = row.regno===userRegno ? " class='highlight'" : "";
-        html += `<tr${highlight}><td>${idx+1}</td><td>${row.regno}</td><td>${row.points}</td><td>${avgTime}</td></tr>`;
+        html += `<tr${highlight}><td>${idx+1}</td><td>${row.name || row.regno}</td><td>${row.points}</td><td>${avgTime}</td></tr>`;
         if(row.regno===userRegno){
           yourRank = `Your Rank: ${idx+1} | Points: ${row.points} | Avg Time: ${avgTime}s`;
           found = true;
@@ -330,6 +340,29 @@ document.getElementById("close-leaderboard").addEventListener("click", () => {
   // Optionally show welcome or registration again
   welcome.classList.remove("hidden");
 });
+
+// How to play functionality
+document.getElementById("how-to-play-link").addEventListener("click", (e) => {
+  e.preventDefault();
+  // Hide all other sections
+  welcome.classList.add("hidden");
+  registration.classList.add("hidden");
+  quiz.classList.add("hidden");
+  thank.classList.add("hidden");
+  document.getElementById("leaderboard").classList.add("hidden");
+  
+  // Show how to play section
+  document.getElementById("how-to-play").classList.remove("hidden");
+  setActiveNav('home'); // Keep home active since it's instructional
+});
+
+document.getElementById("close-how-to-play").addEventListener("click", () => {
+  document.getElementById("how-to-play").classList.add("hidden");
+  // Return to registration section
+  registration.classList.remove("hidden");
+  setActiveNav('registration');
+});
+
 function sendResultToServer(playerName, score, totalQuestions, timeTakenSec, answers) {
   fetch('/submit_result', {
     method: 'POST',
