@@ -67,9 +67,9 @@ body::after{
   align-items:center; 
   gap:12px; 
   padding:0 16px; 
-  background:linear-gradient(180deg, rgba(45,38,54,0.95), rgba(28,22,33,0.95)); 
-  border-bottom:1px solid rgba(255,255,255,0.06);
-  backdrop-filter: blur(10px);
+  background:linear-gradient(180deg, rgba(46,39,55,0.05), rgba(35,29,41,0.03)); 
+  border-bottom:1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(8px);
 }
 .traffic{display:flex; gap:8px}
 .dot{width:12px;height:12px;border-radius:50%}
@@ -202,7 +202,7 @@ body {
 .window{width:min(1080px,96vw); height:min(720px,92vh); background:rgba(24,18,30,0.55); border-radius:18px; overflow:hidden; box-shadow:0 40px 120px rgba(10,0,30,0.55), 0 2px 0 rgba(0,0,0,0.35) inset; backdrop-filter: blur(16px); border:1px solid rgba(0,0,0,0.45); transition:width 0.3s ease}
 /* Wider window when leaderboard is active */
 #leaderboard:not(.hidden) ~ * .window,
-.window:has(#leaderboard:not(.hidden)){width:min(1800px,98vw)}
+.window:has(#leaderboard:not(.hidden)){width:min(1300px,98vw)}
 .titlebar{height:48px; display:flex; align-items:center; gap:12px; padding:0 16px; background:linear-gradient(180deg, rgba(45,38,54,0.9), rgba(28,22,33,0.9)); border-bottom:1px solid rgba(0,0,0,0.5)}
 .traffic{display:flex; gap:8px}
 .dot{width:12px;height:12px;border-radius:50%}
@@ -214,9 +214,8 @@ body {
 .window-body{display:grid; grid-template-columns: 215px 1fr; height: calc(100% - 48px)}
 .sidebar{background:linear-gradient(180deg, rgba(46,39,55,0.05), rgba(35,29,41,0.03)); padding:14px 10px; border-right:1px solid rgba(255,255,255,0.08); color:#f5f5f5; backdrop-filter: blur(8px)}
 .nav{display:flex; flex-direction:column; gap:4px}
-.nav .item{display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:12px; cursor:pointer; color:#f5f5f5; user-select:none; transition: all 0.2s ease}
+.nav .item{display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:12px; cursor:default; color:#f5f5f5; user-select:none; transition: none}
 .nav .item .ico{width:20px; text-align:center; opacity:.9}
-.nav .item:hover{background:rgba(255,255,255,0.12); transform: translateX(2px)}
 .nav .item.active{background:rgba(255,255,255,0.2); color:#fff; box-shadow: 0 2px 8px rgba(255,255,255,0.08)}
 
 .content{background:linear-gradient(180deg, rgba(44,39,51,0.92), rgba(51,45,56,0.92)); height:100%; overflow:auto; padding:22px; display:flex; justify-content:center; align-items:flex-start}
@@ -270,6 +269,27 @@ body {
 #leaderboard #leaderboard-table{box-sizing:border-box; max-width:100%; scrollbar-gutter: stable}
 #leaderboard .card .status{padding:12px 16px}
 #leaderboard .card .btn.small{margin:12px auto 20px; display:block}
+
+/* Your rank summary - prominently displayed at top */
+.rank-summary {
+  background: linear-gradient(135deg, rgba(123, 44, 255, 0.15), rgba(147, 51, 234, 0.15));
+  border: 1px solid rgba(123, 44, 255, 0.3);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin: 0 0 20px 0;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 16px rgba(123, 44, 255, 0.2);
+}
+
+.your-rank-display {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--g-font);
+  text-align: center;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
 #your-rank-container{padding:8px 16px; color:var(--g-muted); text-align:center}
 
 /* leaderboard table */
@@ -278,8 +298,8 @@ body {
 .lb-table th,.lb-table td{padding:12px 14px; border-bottom:1px solid rgba(0,0,0,0.45); text-align:center; overflow:hidden; text-overflow:ellipsis; white-space:normal; word-break:break-word; box-sizing:border-box}
 /* Enhanced leaderboard column widths and better alignment */
 #leaderboard .lb-table th:first-child, #leaderboard .lb-table td:first-child{width:15%; text-align:center; font-weight:700; color:var(--accent2)}
-#leaderboard .lb-table th:nth-child(2), #leaderboard .lb-table td:nth-child(2){width:35%; text-align:left; font-weight:600}
-#leaderboard .lb-table th:nth-child(3), #leaderboard .lb-table td:nth-child(3){width:25%; text-align:center; font-weight:700; color:#4ade80}
+#leaderboard .lb-table th:nth-child(2), #leaderboard .lb-table td:nth-child(2){width:20%; text-align:left; font-weight:600}
+#leaderboard .lb-table th:nth-child(3), #leaderboard .lb-table td:nth-child(3){width:20%; text-align:center; font-weight:700; color:#4ade80}
 #leaderboard .lb-table th:nth-child(4), #leaderboard .lb-table td:nth-child(4){width:25%; text-align:center; font-weight:600; color:var(--g-muted)}
 #leaderboard .lb-table th, #leaderboard .lb-table td{padding:12px 10px}
 
@@ -308,22 +328,104 @@ body {
 .lb-table tbody tr:hover{background:rgba(22,117,219,0.12)}
 .lb-table tbody tr.highlight{background:rgba(23,105,230,0.22)}
 
-/* Dark scrollbars inside leaderboard only */
-#leaderboard #leaderboard-table::-webkit-scrollbar{height:10px;width:10px}
-#leaderboard #leaderboard-table::-webkit-scrollbar-track{background:#2a2430;border-radius:10px}
-#leaderboard #leaderboard-table::-webkit-scrollbar-thumb{background:#5f5a64;border-radius:10px;border:2px solid #2a2430}
-#leaderboard #leaderboard-table::-webkit-scrollbar-thumb:hover{background:#7b7680}
+/* Modern purple-themed scrollbars inside leaderboard */
+#leaderboard #leaderboard-table::-webkit-scrollbar{
+  width: 8px;
+  height: 8px;
+}
+
+#leaderboard #leaderboard-table::-webkit-scrollbar-track{
+  background: rgba(30, 20, 40, 0.3);
+  border-radius: 12px;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(123, 44, 255, 0.1);
+}
+
+#leaderboard #leaderboard-table::-webkit-scrollbar-thumb{
+  background: linear-gradient(135deg, rgba(123, 44, 255, 0.7), rgba(147, 51, 234, 0.7));
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 8px rgba(123, 44, 255, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+#leaderboard #leaderboard-table::-webkit-scrollbar-thumb:hover{
+  background: linear-gradient(135deg, rgba(123, 44, 255, 0.9), rgba(147, 51, 234, 0.9));
+  box-shadow: 0 4px 12px rgba(123, 44, 255, 0.4);
+  transform: scale(1.05);
+}
+
+#leaderboard #leaderboard-table::-webkit-scrollbar-thumb:active{
+  background: linear-gradient(135deg, rgba(123, 44, 255, 1), rgba(147, 51, 234, 1));
+  box-shadow: 0 2px 6px rgba(123, 44, 255, 0.5);
+}
+
+/* Firefox scrollbar support */
+#leaderboard #leaderboard-table {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(123, 44, 255, 0.7) rgba(30, 20, 40, 0.3);
+}
 
 /* Standalone leaderboard page (/result) */
 body > h1{color:var(--g-font); text-align:center; margin:24px 0 12px; font-weight:800}
-.lb-card{width:min(1100px,90vw); margin:0 auto 40px; background:linear-gradient(180deg, rgba(56,52,63,0.96), rgba(41,36,46,0.94)); border:1px solid rgba(0,0,0,0.6); border-radius:16px; box-shadow:0 30px 80px rgba(3,2,20,0.35); overflow:auto; max-height:75vh}
+
+/* Fix for standalone leaderboard page - override main app styles */
+body:not(:has(#app)) {
+  overflow: auto !important;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+body:not(:has(#app))::after {
+  display: none !important;
+}
+
+.lb-card{
+  width:min(1100px,90vw); 
+  margin:0 auto 40px; 
+  background:linear-gradient(180deg, rgba(56,52,63,0.96), rgba(41,36,46,0.94)); 
+  border:1px solid rgba(123, 44, 255, 0.3); 
+  border-radius:16px; 
+  box-shadow:0 30px 80px rgba(3,2,20,0.35); 
+  overflow:auto; 
+  max-height:75vh;
+  backdrop-filter: blur(20px);
+  position: relative;
+  z-index: 10;
+}
 .lb-card .lb-table{background:transparent}
-.lb-card .lb-table th:first-child, .lb-card .lb-table td:first-child{width:12%; text-align:left}
-.lb-card .lb-table th:nth-child(2), .lb-card .lb-table td:nth-child(2){width:36%; text-align:left}
-.lb-card .lb-table th:nth-child(3), .lb-card .lb-table td:nth-child(3){width:16%}
-.lb-card .lb-table th:nth-child(4), .lb-card .lb-table td:nth-child(4){width:12%}
-.lb-card .lb-table th:nth-child(5), .lb-card .lb-table td:nth-child(5){width:12%}
-.lb-card .lb-table th:nth-child(6), .lb-card .lb-table td:nth-child(6){width:12%}
+.lb-card .lb-table th:first-child, .lb-card .lb-table td:first-child{width:12%; text-align:center}
+.lb-card .lb-table th:nth-child(2), .lb-card .lb-table td:nth-child(2){width:30%; text-align:left; font-weight:600}
+.lb-card .lb-table th:nth-child(3), .lb-card .lb-table td:nth-child(3){width:18%; text-align:center}
+.lb-card .lb-table th:nth-child(4), .lb-card .lb-table td:nth-child(4){width:14%; text-align:center; font-weight:600; color:#4ade80}
+.lb-card .lb-table th:nth-child(5), .lb-card .lb-table td:nth-child(5){width:14%; text-align:center; font-weight:600; color:var(--accent2)}
+.lb-card .lb-table th:nth-child(6), .lb-card .lb-table td:nth-child(6){width:12%; text-align:center; color:var(--g-muted)}
+
+/* Add medals for top 3 in standalone page */
+.lb-card .lb-table tbody tr:nth-child(1) td:first-child::before{content:"🥇 "}
+.lb-card .lb-table tbody tr:nth-child(2) td:first-child::before{content:"🥈 "}
+.lb-card .lb-table tbody tr:nth-child(3) td:first-child::before{content:"🥉 "}
+
+/* Custom scrollbar for standalone leaderboard */
+.lb-card::-webkit-scrollbar{
+  width: 8px;
+  height: 8px;
+}
+
+.lb-card::-webkit-scrollbar-track{
+  background: rgba(30, 20, 40, 0.3);
+  border-radius: 12px;
+}
+
+.lb-card::-webkit-scrollbar-thumb{
+  background: linear-gradient(135deg, rgba(123, 44, 255, 0.7), rgba(147, 51, 234, 0.7));
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.lb-card::-webkit-scrollbar-thumb:hover{
+  background: linear-gradient(135deg, rgba(123, 44, 255, 0.9), rgba(147, 51, 234, 0.9));
+}
 
 /* animations */
 .slide-in{animation:slideIn .45s ease both}

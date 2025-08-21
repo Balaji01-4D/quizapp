@@ -115,8 +115,8 @@ def get_questions():
         with open(QUESTIONS_FILE, "r", encoding="utf-8") as f:
             qs = json.load(f)
         # Split into set a (first 15) and set b (last 15)
-        set_a = qs[:15][:2]
-        set_b = qs[15:][:2]
+        set_a = qs[:15]
+        set_b = qs[15:]
         chosen_set = random.choice([set_a, set_b])  # Choose 2 from either set
         # Re-assign ids based on the selected questions' original indices in qs
         safe = []
@@ -321,6 +321,23 @@ def admin_api_delete_participant():
         return jsonify({"success": True, "message": f"Deleted {regno}"})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
+
+@app.route("/admin/api/delete-all-data", methods=["POST"])
+@require_admin
+def admin_api_delete_all_data():
+    """Delete all participants, results, and answers from the database."""
+    try:
+        # Delete all data in proper order (due to foreign key constraints)
+        deleted_answers = Answer.delete().execute()
+        deleted_results = Result.delete().execute()
+        deleted_participants = Participant.delete().execute()
+        
+        return jsonify({
+            "success": True, 
+            "message": f"Deleted all data: {deleted_participants} participants, {deleted_results} results, {deleted_answers} answers"
+        })
+    except Exception as e:
+        return jsonify({"success": False, "message": f"Error deleting data: {str(e)}"}), 500
 
 @app.route("/admin/api/add-question", methods=["POST"])
 @require_admin

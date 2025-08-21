@@ -72,6 +72,12 @@
         <div class="row">
           <a class="btn" href="/admin/api/export-leaderboard">Export Leaderboard CSV</a>
         </div>
+        <hr style="opacity:.12">
+        <h2>Data Management</h2>
+        <div class="row">
+          <button class="btn warn" onclick="deleteAllData()">Delete All Data</button>
+          <div class="small muted">⚠️ This will permanently delete all participants, scores, and quiz results!</div>
+        </div>
       </aside>
     </div>
   </div>
@@ -97,6 +103,21 @@
         document.getElementById('add-status').textContent = j.message || (j.success ? 'Added' : 'Error');
         if(j.success){ document.getElementById('q').value=''; document.getElementById('opts').value=''; document.getElementById('ans').value=''; }
       }).catch(()=>document.getElementById('add-status').textContent='Network error');
+    }
+    
+    function deleteAllData(){
+      if(!confirm('⚠️ WARNING: This will permanently delete ALL participants, scores, and quiz results!\n\nThis action CANNOT be undone!\n\nAre you absolutely sure you want to continue?')) return;
+      
+      // Double confirmation for such a destructive action
+      if(!confirm('FINAL CONFIRMATION: Delete ALL quiz data permanently?')) return;
+      
+      fetch('/admin/api/delete-all-data', {
+        method:'POST', 
+        headers:{'Content-Type':'application/json'}
+      }).then(r=>r.json()).then(j=>{
+        alert(j.message || (j.success ? 'All data deleted successfully!' : 'Error deleting data'));
+        if(j.success) location.reload();
+      }).catch(()=>alert('Network error while deleting data'));
     }
   </script>
 </body>
